@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Message Box</title>
+<style>
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* Hide overflow to prevent scrollbars */
+    background-color: pink;
+  }
+  .message-box {
+    border: 1px solid #ccc;
+    padding: 150px;
+    text-align: center;
+    background-color: #f9f9f9;
+    color: pink;
+    opacity: 0; /* Initially hide the message box */
+    animation: fadeIn 1s ease-in forwards; /* Fade in animation */
+  }
+  .yesbutton {
+    margin: 5px 20px 5px 5px; /* Added margin between buttons */
+    padding: 20px 40px;
+    border: none;
+    cursor: pointer;
+    color:white ; 
+    background-color: pink ;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .nobutton {
+    margin: 5px 5px 5px 20px; /* Added margin between buttons */
+    padding: 20px 40px;
+    border: none;
+    cursor: pointer;
+    border-color: pink;
+    position: absolute;
+    transition: transform 0.3s;
+    color:white ; 
+    background-color: pink ;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .message-box p {
+    font-size: 50px;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="message-box">
+  <p>Answer this question before we continue </p>
+  <p>Do you love me ? </p>
+  <button class="yesbutton" onclick="onButtonClick('Yes','changetoHelloHTML()')">Yes</button>
+  <button class="nobutton" onclick="onButtonClick('No')" onmouseover="showAlert()">No</button>
+</div>
+
+<script>
+  function onButtonClick(result) {
+    if (result === 'Yes') {
+      playMusic();
+    }
+  }
+  
+  function playMusic() {
+    // Replace 'music.mp3' with the path to your music file
+    window.location.href = 'new.html';
+  }
+
+  function showAlert() {
+    alert("You can't do that here.");
+  }
+
+  const buttons = document.getElementsByClassName('nobutton');
+
+  for (let i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('mouseover', () => {
+      const maxX = window.innerWidth - buttons[i].clientWidth;
+      const maxY = window.innerHeight - buttons[i].clientHeight;
+      
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      
+      // Ensure the button stays within the visible area of the screen
+      const newX = Math.max(0, Math.min(randomX, maxX));
+      const newY = Math.max(0, Math.min(randomY, maxY));
+      
+      buttons[i].style.transform = `translate(${newX}px, ${newY}px)`;
+    });
+  }
+</script>
+</body>
+</html>

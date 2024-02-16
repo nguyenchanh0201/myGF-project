@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typewriter Effect with Simulated Mouse Click</title>
+<style>
+  /* CSS styles */
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+    background-color: white;
+  }
+
+  #container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #message, #birthdayMessage {
+    font-size: 24px;
+    white-space: pre;
+  }
+
+  #birthdayMessage {
+    display: none; /* Initially hide the birthday message */
+    border: 2px solid black;
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  #sendButton {
+    background-color: rgb(0, 217, 255);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: none;
+  }
+
+  .fakeMouse {
+    width: 20px;
+    height: 20px;
+    border: 2px solid black;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    top: 50%; /* Adjust these values to position the fake mouse pointer */
+    left: 90%; /* Adjust these values to position the fake mouse pointer */
+    z-index: 1000;
+  }
+
+  @keyframes click {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(0.85); }
+  }
+
+  .animatedButton {
+    background-color: pink;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    animation: pulse 2s infinite; /* Add animation */
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="birthdayMessage"></div> <!-- Container for the birthday message -->
+  <button id="sendButton">Send</button>
+</div>
+<div class="fakeMouse" id="fakeMouse"></div> <!-- Fake mouse pointer -->
+
+<script>
+  function typeWriter(element, text, i, callback) {
+    if (i < (text.length)) {
+      element.textContent = text.substring(0, i + 1);
+      setTimeout(function() {
+        typeWriter(element, text, i + 1, callback);
+      }, 100);
+    } else if (callback && typeof callback === 'function') {
+      callback();
+    }
+  }
+
+  function moveFakeMouse(callback) {
+    var fakeMouse = document.getElementById('fakeMouse');
+    var button = document.getElementById('sendButton');
+    var buttonRect = button.getBoundingClientRect();
+    var buttonCenterX = buttonRect.left + (buttonRect.width / 2) + window.scrollX;
+    var buttonCenterY = buttonRect.top + (buttonRect.height / 2) + window.scrollY;
+
+    // Move the fake mouse pointer over the button
+    fakeMouse.style.left = buttonCenterX + 'px';
+    fakeMouse.style.top = buttonCenterY + 'px';
+    fakeMouse.style.display = 'block'; // Ensure fake mouse is visible
+
+    // Trigger the fake click animation
+    setTimeout(function() {
+      fakeMouse.style.animation = 'click 0.5s ease';
+      setTimeout(callback, 500); // Call the callback after the animation
+    }, 1000);
+  }
+
+  // Start the typewriter effect after a delay
+  setTimeout(function() {
+    var container = document.getElementById('container');
+    var messages = ["Hehe I love you too <3 ", "Hey, ...", "Today is your birthday", "I was going to do this"];
+    var currentIndex = 0;
+
+    function displayNextMessage() {
+      if (currentIndex < messages.length) {
+        var messageDiv = document.createElement('div');
+        messageDiv.id = 'message';
+        container.appendChild(messageDiv);
+        typeWriter(messageDiv, messages[currentIndex], 0, function() {
+          setTimeout(function() {
+            messageDiv.style.display = 'none';
+            currentIndex++;
+            displayNextMessage();
+          }, 1000); // Display each message for 1 second before hiding
+        });
+      } else {
+        var birthdayMessage = document.getElementById('birthdayMessage');
+        birthdayMessage.style.display = 'block'; // Show the birthday message container
+        typeWriter(birthdayMessage, 'Happy birthday to you!! Yeee! Many many happy blah blah...', 0, function() {
+          // Show the button after the typewriter effect is complete
+          var sendButton = document.getElementById('sendButton');
+          sendButton.style.display = 'inline-block';
+          // Move and animate the fake mouse after showing the button
+          moveFakeMouse(function() {
+            // After fake click, clear all and show "Thank You" message
+            setTimeout(function() {
+              container.innerHTML = '<div id="thankYouMessage" style="font-size: 24px; white-space: pre;">But then I stopped</div>';
+              // Optionally, hide or remove the fake mouse as well after it has clicked
+              var fakeMouse = document.getElementById('fakeMouse');
+              if (fakeMouse) fakeMouse.style.display = 'none'; // Or fakeMouse.remove() to remove it from DOM
+
+              // Function to display additional messages
+              function displayAdditionalMessages() {
+                var additionalMessages = ["Cuz you are really special to me.", "So I made this just for you.", "Hope you like it <3."];
+                var currentIndex = 0;
+
+                function displayNextMessage() {
+                  if (currentIndex < additionalMessages.length) {
+                    setTimeout(function() {
+                      container.innerHTML = '<div style="font-size: 24px; white-space: pre;">' + additionalMessages[currentIndex] + '</div>';
+                      currentIndex++;
+                      displayNextMessage();
+                    }, 3000); // Display each message after a delay of 3 seconds
+                  } else {
+                    // Create and display the animated button
+                    var button = document.createElement('button');
+                    button.innerHTML = 'Click here';
+                    button.onclick = function() {
+                      window.location.href = 'test.html';
+                      // You can add your button click functionality here
+                    };
+                    button.classList.add('animatedButton'); // Add a class for animation
+                    container.appendChild(button);
+                  }
+                }
+
+                displayNextMessage();
+              }
+
+              // Call the function to display additional messages
+              displayAdditionalMessages();
+
+            }, 3000); // 5 seconds after the fake click
+          });
+        });
+      }
+    }
+
+    displayNextMessage();
+  }, 3000);
+</script>
+
+</body>
+</html>
